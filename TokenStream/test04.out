@@ -1,0 +1,8 @@
+<dt, int><blank><id, 1><blank><punctuator, (><dt, float><blank><id, 2><punctuator, ,><blank><dt, int><blank><id, 3><punctuator, )><blank><punctuator, {><newline>
+<blank><blank><blank><blank><dt, int><blank><id, 4><punctuator, ;><newline>
+<blank><blank><blank><blank><keyword, if><blank><punctuator, (><id, 4><blank><rel_op, GT><blank><id, 5><punctuator, )><blank><punctuator, {><newline>
+<blank><blank><blank><blank><blank><blank><blank><blank><dt, int><blank><id, 4><punctuator, ;><newline>
+<blank><blank><blank><blank><blank><blank><blank><blank><dt, float><blank><id, 4><punctuator, ;><newline>
+<blank><blank><blank><blank><punctuator, }><newline>
+<blank><blank><blank><blank><dt, float><blank><id, 4><punctuator, ;><newline>
+<punctuator, }>

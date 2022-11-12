@@ -1,0 +1,43 @@
+Scope: 0
+matched <dt, int>
+matched <id, 1>
+matched <(>
+matched <dt, float>
+matched <id, 2>
+matched <,>
+matched <dt, int>
+matched <id, 3>
+matched <)>
+matched <{>
+In abc()
+Scope: 1
+matched <id, 4>
+matched <=>
+matched <id, 3>
+matched <+>
+matched <id, 2>
+matched <;>
+matched <for>
+matched <(>
+matched <dt, int>
+matched <id, 5>
+matched <id, 4>
+matched <;>
+matched <id, 4>
+matched <rel_op, GT>
+matched <id, 2>
+matched <;>
+matched <id, 5>
+matched <++>
+matched <)>
+matched <{>
+Scope: 2
+matched <}>
+Scope: 1
+matched <return>
+matched <id, 4>
+matched <;>
+matched <}>
+Exiting abc()
+Scope: 0
+EOF

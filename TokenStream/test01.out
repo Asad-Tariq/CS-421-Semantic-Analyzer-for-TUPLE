@@ -1,0 +1,5 @@
+<dt, int><blank><id, 1><blank><punctuator, (><dt, float><blank><id, 2><punctuator, ,><blank><dt, int><blank><id, 3><punctuator, )><blank><punctuator, {><newline>
+<blank><blank><blank><blank><id, 4><blank><assign, =><blank><id, 3><blank><+><blank><id, 2><punctuator, ;><newline>
+<blank><blank><blank><blank><id, 2><blank><assign, =><blank><id, 3><blank><+><blank><id, 4><punctuator, ;><newline>
+<blank><blank><blank><blank><keyword, return><blank><id, 4><blank><*><blank><id, 2><punctuator, ;><newline>
+<punctuator, }>

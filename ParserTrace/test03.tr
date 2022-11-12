@@ -1,0 +1,24 @@
+Scope: 0
+matched <dt, int>
+matched <id, 1>
+matched <(>
+matched <dt, float>
+matched <id, 2>
+matched <,>
+matched <dt, int>
+matched <id, 3>
+Parsing Error!
+Parsing Error!
+matched <{>
+In abc()
+Scope: 1
+matched <return>
+matched <id, 2>
+matched <+>
+matched <id, 3>
+matched <;>
+Parsing Error!
+matched <}>
+Exiting abc()
+Scope: 0
+EOF
