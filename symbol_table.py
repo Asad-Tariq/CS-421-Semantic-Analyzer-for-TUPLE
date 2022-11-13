@@ -20,7 +20,7 @@ class SymbolTable:
         else:
             return False
 
-    def insert(self, name, return_type, scope):
+    def enter(self, name, return_type, scope):
         self.table.append(Record(name, return_type, scope))
 
     def check_return_type(self, name, scope):

@@ -135,6 +135,43 @@ class Parser:
 
         return tok, peek_tok
     
+    def __lookup(self, name, return_type) -> bool:
+        """Checks if a variable/function is declared.
+
+        Args:
+        - self: mandatory object reference.
+        - name: the name of the variable/function.
+        - return_type: the return type of the variable/function.
+
+        Returns:
+        True if the variable/function is declared, False otherwise.
+        """
+
+        return self.parsing_symb_table.lookup(name, return_type, self.scope)
+
+    def __redeclaration(self, name, return_type, id_type) -> None:
+        """Checks for redeclaration of a variable/function.
+
+        Args:
+        - self: mandatory object reference.
+        - name: the name of the variable/function.
+        - return_type: the return type of the variable/function.
+        - id_type: the type of the redeclaration to check.
+
+        Returns:
+        None.
+        """
+
+        if self.__lookup(name, return_type) == False:
+            self.parsing_symb_table.enter(name, return_type, self.scope)
+        else:
+            self.parser_trace.append("Re-declaration Error!")
+            error = id_type + " " + name + " already defined in scope " + str(self.scope)
+            try:
+                self.semantic_errors[self.line_count].append(error)
+            except KeyError:
+                self.semantic_errors[self.line_count] = [error]
+    
     def __program(self) -> None:
         """The production rules for the 'Program' non-terminal.
 
@@ -160,15 +197,7 @@ class Parser:
                 self.parser_trace.append("matched " + tok[0] + ", " + tok[1])
                 self.current_function = tok[1]
                 function_name = re.search("(.+?),", self.symbol_table[int(self.current_function[:-1])]).group(1)
-                if self.parsing_symb_table.lookup(function_name, return_type, self.scope) == False:
-                    self.parsing_symb_table.insert(function_name, return_type, self.scope)
-                else:
-                    self.parser_trace.append("Re-declaration Error!")
-                    error = "Function " + function_name + " already defined"
-                    try:
-                        self.semantic_errors[self.line_count].append(error)
-                    except KeyError:
-                        self.semantic_errors[self.line_count] = [error]
+                self.__redeclaration(function_name, return_type, "Function")
                 self.__nextToken()
                 tok, peek_tok = self.__updateTokens()
             if tok[1] == "(>":
@@ -388,15 +417,7 @@ class Parser:
             if tok[0] == "<id":
                 self.parser_trace.append("matched " + tok[0] + ", " + tok[1])
                 identifier_name = re.search("(.+?),", self.symbol_table[int(tok[1][:-1])]).group(1)
-                if self.parsing_symb_table.lookup(identifier_name, identifier_type, self.scope) == False:
-                    self.parsing_symb_table.insert(identifier_name, identifier_type, self.scope)
-                else:
-                    self.parser_trace.append("Re-declaration Error!")
-                    error = "Id '" + identifier_name + "' has already been declared in this scope!"
-                    try:
-                        self.semantic_errors[self.line_count].append(error)
-                    except KeyError:
-                        self.semantic_errors[self.line_count] = [error]
+                self.__redeclaration(identifier_name, identifier_type, "Identifier")
                 self.__nextToken()
                 tok, peek_tok = self.__updateTokens()
             if tok[1] in firstSet["optionalAssign"]:
