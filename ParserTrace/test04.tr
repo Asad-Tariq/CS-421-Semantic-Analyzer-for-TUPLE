@@ -5,6 +5,10 @@ matched <(>
 matched <dt, float>
 matched <id, 2>
 matched <,>
+matched <dt, float>
+matched <id, 2>
+Re-declaration Error!
+matched <,>
 matched <dt, int>
 matched <id, 3>
 matched <)>

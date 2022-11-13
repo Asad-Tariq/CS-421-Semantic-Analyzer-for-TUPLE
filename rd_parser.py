@@ -1,5 +1,6 @@
 from lexer import *
 from parser_spec import *
+from compatibility_spec import *
 from symbol_table import *
 from typing import Dict, Tuple, List
 import re
@@ -279,14 +280,19 @@ class Parser:
 
         # print("IN PARAMLIST")
         tok, peek_tok = self.__updateTokens()
+        param_name = None
+        param_type = None
 
         if tok[0] in firstSet["paramList"]:
             if tok[0] == "<dt":
                 self.parser_trace.append("matched " + tok[0] + ", " + tok[1])
+                param_type = tok[1][:-1]
                 self.__nextToken()
                 tok, peek_tok = self.__updateTokens()
             if tok[0] == "<id":
                 self.parser_trace.append("matched " + tok[0] + ", " + tok[1])
+                param_name = re.search("(.+?),", self.symbol_table[int(tok[1][:-1])]).group(1)
+                self.__redeclaration(param_name, param_type, "Identifier")
                 self.__nextToken()
                 tok, peek_tok = self.__updateTokens()
             if tok[1] in firstSet["pList"]:
@@ -313,6 +319,8 @@ class Parser:
 
         # print("IN PLIST")
         tok, peek_tok = self.__updateTokens()
+        param_name = None
+        param_type = None
 
         if tok[1] in firstSet["pList"]:
             if tok[1] == ",>":
@@ -321,16 +329,19 @@ class Parser:
                 tok, peek_tok = self.__updateTokens()
             if tok[0] == "<dt":
                 self.parser_trace.append("matched " + tok[0] + ", " + tok[1])
+                param_type = tok[1][:-1]
                 self.__nextToken()
                 tok, peek_tok = self.__updateTokens()
             if tok[0] == "<id":
                 self.parser_trace.append("matched " + tok[0] + ", " + tok[1])
+                param_name = re.search("(.+?),", self.symbol_table[int(tok[1][:-1])]).group(1)
+                self.__redeclaration(param_name, param_type, "Identifier")
                 self.__nextToken()
                 tok, peek_tok = self.__updateTokens()
             if tok[1] in firstSet["pList"]:
                 self.__pList()
         
-        if tok[1] in followSet["pList"]:
+        elif tok[1] in followSet["pList"]:
             return
 
         else:

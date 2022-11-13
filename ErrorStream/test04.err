@@ -1,2 +1,3 @@
 <line#>    <error_found>                                      <error_type>        
+1          Identifier b already defined in scope 0            Semantic            
 2          Undeclared identifier a                            Semantic            
