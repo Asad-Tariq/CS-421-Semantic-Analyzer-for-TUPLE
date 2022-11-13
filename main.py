@@ -1,6 +1,7 @@
 import os
 from lexer import *
 from rd_parser import *
+from symbol_table import *
 from typing import List, Dict, Tuple
 
 
@@ -61,6 +62,26 @@ def write_symb_tbl(symbol_table: Dict[int, str], file_num: int) -> None:
         for ix, entry in symbol_table.items():
             table.write("{:<8} {:<15}\n".format(ix, entry))
 
+def write_semantic_symb_tbl(symbol_tabl: List, file_num: int) -> None:
+    ''' Writes the semantic symbol table to a file of the same name as the input
+    with the .sym extension.
+
+    Args:
+    - symbol_table: all recorded entries in the symbol table.
+    - file_num: the test number of the file that was read.
+
+    Returns:
+    None.
+    '''
+
+    # get absolute file path
+    abs_file_path = get_abs_file_path(f'SemanticSymbolTable\\test0{file_num}.sym')
+
+    # write the file
+    with open(abs_file_path, "w") as table:
+        table.write("{:<8} {:<15} {:<15} {:<15}\n".format('Name', 'Return Type', 'Scope', 'Size'))
+        for entry in symbol_tabl.table:
+            table.write("{:<8} {:<15} {:<15} {:<15}\n".format(entry.name, entry.return_type, entry.scope, entry.size))
 
 def write_error_stream(error_stream: Dict[int, List[str]], file_num: int, error_type: str, count: int) -> None:
     """Writes the error stream generated from the lexical analysis to a file
@@ -87,10 +108,10 @@ def write_error_stream(error_stream: Dict[int, List[str]], file_num: int, error_
     # write the file
     with open(abs_file_path, mode) as error:
         if mode == "w":
-            error.write("{:<10} {:<50} {:<20}\n".format('<line#>', '<error_found>', '<error_type>'))
+            error.write("{:<8} {:<50} {:<80}\n".format('<line#>', '<error_found>', '<error_type>'))
         for line, errors in error_stream.items():
             for err in errors:
-                error.write("{:<10} {:<50} {:<20}\n".format(line + 1, err, error_type))
+                error.write("{:<8} {:<50} {:<80}\n".format(line + 1, err, error_type))
 
 def tokenize(lexer: Lexer, symbol_table: Dict[int, str], symbol_count: int,
              error_stream: Dict[int, List[str]], token_stream: Dict[int, str],
@@ -220,7 +241,7 @@ def main() -> None:
     parser = Parser(token_list, symbol_table)
     
     # obtain the parser trace and list of errors from the parser class after parsing all tokens
-    parser_trace, parsing_errors, semantic_errors = parser.parseToken()
+    parser_trace, parsing_errors, semantic_errors, semantic_symbol_table = parser.parseToken()
 
     # output the parser trace
     write_parser_trace(parser_trace, file_num)
@@ -230,6 +251,9 @@ def main() -> None:
 
     # ouptut the semantic errors
     write_error_stream(semantic_errors, file_num, "Semantic", 3)
+
+    # output the semantic symbol table
+    write_semantic_symb_tbl(semantic_symbol_table, file_num)
 
 # driver code
 if __name__ == "__main__":

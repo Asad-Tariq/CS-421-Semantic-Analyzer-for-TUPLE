@@ -1,0 +1,5 @@
+Name     Return Type     Scope           Size           
+abc      int             0               2              
+b        int             0               1              
+c        int             0               1              
+a        int             1               1              

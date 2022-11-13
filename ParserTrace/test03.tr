@@ -2,22 +2,24 @@ Scope: 0
 matched <dt, int>
 matched <id, 1>
 matched <(>
-matched <dt, float>
+matched <dt, int>
 matched <id, 2>
 matched <,>
 matched <dt, int>
 matched <id, 3>
-Parsing Error!
-Parsing Error!
+matched <)>
 matched <{>
 In abc()
 Scope: 1
-matched <return>
+matched <dt, int>
+matched <id, 4>
+matched <;>
+matched <id, 4>
+matched <=>
 matched <id, 2>
-matched <+>
+matched <*>
 matched <id, 3>
 matched <;>
-Parsing Error!
 matched <}>
 Exiting abc()
 Scope: 0

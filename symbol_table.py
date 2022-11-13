@@ -86,6 +86,9 @@ class SymbolTable:
             for record in self.table:
                 if record.name == name and record.scope == scope:
                     return record.return_type
+                elif record.name == name and record.scope != scope:
+                    if record.scope == 0:
+                        return record.return_type
             return None
 
     def print_table(self) -> None:

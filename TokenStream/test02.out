@@ -1,5 +1,9 @@
-<dt, int><blank><id, 1><blank><punctuator, (><dt, float><blank><id, 2><punctuator, ,><blank><dt, int><blank><id, 3><punctuator, )><blank><punctuator, {><newline>
+<dt, int><blank><id, 1><blank><punctuator, (><dt, int><blank><id, 2><punctuator, ,><blank><dt, int><blank><id, 3><punctuator, )><blank><punctuator, {><newline>
+<blank><blank><blank><blank><dt, float><blank><id, 4><punctuator, ;><newline>
+<blank><blank><blank><blank><dt, float><blank><id, 5><punctuator, ;><newline>
+<blank><blank><blank><blank><dt, char><blank><id, 6><punctuator, ;><newline>
+<blank><blank><blank><blank><id, 6><blank><assign, =><blank><Invalid char constant!, 'abb><newline>
 <blank><blank><blank><blank><id, 4><blank><assign, =><blank><id, 3><blank><+><blank><id, 2><punctuator, ;><newline>
-<blank><blank><blank><blank><keyword, for><blank><punctuator, (><dt, int><blank><id, 5><blank><id, 4><punctuator, ;><blank><id, 4><blank><rel_op, GT><blank><id, 2><punctuator, ;><blank><id, 5><+><+><punctuator, )><blank><punctuator, {><punctuator, }><newline>
+<blank><blank><blank><blank><keyword, for><blank><punctuator, (><dt, int><blank><id, 7><blank><id, 4><punctuator, ;><blank><id, 4><blank><rel_op, GT><blank><id, 2><punctuator, ;><blank><id, 7><+><+><punctuator, )><blank><punctuator, {><punctuator, }><newline>
 <blank><blank><blank><blank><keyword, return><blank><id, 4><punctuator, ;><newline>
 <punctuator, }>

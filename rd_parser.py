@@ -33,6 +33,7 @@ class Parser:
         self.line_count = 0
         self.scope = 0
         self.parsing_symb_table = SymbolTable()
+        self.return_stmt_type = None
         self.parser_trace.append("Scope: " + str(self.scope))
 
     def __checkToken(self) -> List[str]:
@@ -123,8 +124,12 @@ class Parser:
         None.
         """
 
+        if len(tok) == 1:
+            error = "Expected " + tok[0] + " but found " + peek_tok
+        else:
+            error = tok[1][:-1] + " cannot be parsed"
+        
         self.parser_trace.append("Parsing Error!")
-        error = "Token " + tok[0] + ", " + tok[1] + " not expected in program"
         try:
             self.error_stream[self.line_count].append(error)
         except KeyError:
@@ -198,6 +203,35 @@ class Parser:
             except KeyError:
                 self.semantic_errors[self.line_count] = [error]
 
+    def __incompatibility(self) -> None:
+        """Checks for type incompatibility.
+
+        Args:
+        - self: mandatory object reference.
+
+        Returns:
+        None.
+        """
+
+        self.parser_trace.append("Type Incompatibility Error!")
+        error = "Type Incompatibility"
+        try:
+            self.semantic_errors[self.line_count].append(error)
+        except KeyError:
+            self.semantic_errors[self.line_count] = [error]
+    
+    def __checkassignment(self, type_one, type_two) -> bool:
+        """Checks for assignment incompatibility.
+
+        Args:
+        - self: mandatory object reference.
+
+        Returns:
+        None.
+        """
+
+        return type_one == type_two
+
     def __program(self) -> None:
         """The production rules for the 'Program' non-terminal.
 
@@ -248,6 +282,7 @@ class Parser:
             if tok[0] in firstSet["stmts"] or tok[1] in firstSet["stmts"]:
                 self.__stmts()
                 # print("IN PROGRAM")
+                self.__nextToken()
                 tok, peek_tok = self.__updateTokens()
             if tok[1] == "}>":
                 self.parser_trace.append("matched <" + tok[1])
@@ -416,7 +451,7 @@ class Parser:
                 tok, peek_tok = self.__updateTokens()
                 self.__stmtsPrime()
             if tok[1] in firstSet["returnStmt"]:
-                self.__returnStmt()
+                self.return_stmt_type = self.__returnStmt()
                 tok, peek_tok = self.__updateTokens()
                 self.__stmtsPrime()
             else:
@@ -595,11 +630,18 @@ class Parser:
                 self.__nextToken()
                 tok, peek_tok = self.__updateTokens()
             if tok[0] in firstSet["expr"]:
-                self.__expr()
+                expr_type = self.__expr()
                 # print("IN ASSIGNSTMT")
+                if self.__checkassignment(identifier_type, expr_type) == False:
+                    self.parser_trace.append("ERROR: Type mismatch in assignment")
+                    error = "ERROR: Type mismatch in assignment"
+                    try:
+                        self.semantic_errors[self.line_count].append(error)
+                    except KeyError:
+                        self.semantic_errors[self.line_count] = [error]
                 tok, peek_tok = self.__updateTokens()
             if len(tok) == 2 and tok[1] in firstSet["expr"]:
-                self.__expr()
+                expr_type = self.__expr()
                 # print("IN ASSIGNSTMT")
                 tok, peek_tok = self.__updateTokens()
             if len(tok) == 2 and tok[1] == ";>":
@@ -629,30 +671,33 @@ class Parser:
 
         if tok[0] in firstSet["expr"] or tok[1] in firstSet["expr"]:
             if tok[0] in firstSet["t"] or tok[1] in firstSet["t"]:
-                self.__t()
+                t_type = self.__t()
                 # print("IN EXPR")
             if tok[1] in firstSet["ePrime"]:
-                self.__ePrime()
+                e_prime_type = self.__ePrime(t_type)
+                return e_prime_type
                 # print("IN EXPR")
             if "epsilon" in firstSet["ePrime"] and tok[1] not in firstSet["ePrime"]:
-                self.__ePrime()
+                e_prime_type = self.__ePrime(t_type)
+                return e_prime_type
                 # print("IN EXPR")
 
         elif tok[0] in followSet["expr"]:
-            return
+            return e_prime_type
 
         elif tok[1] in followSet["expr"]:
-            return
+            return e_prime_type
 
         else:
             tok, peek_tok = self.__recordingErrors(tok, peek_tok)
             return
 
-    def __ePrime(self) -> None:
+    def __ePrime(self, left_type) -> None:
         """The production rules for the "Expr'" non-terminal.
 
         Args:
         - self: mandatory object reference.
+        - left_type: the type of the left side of the expression.
 
         Returns:
         None.
@@ -668,19 +713,35 @@ class Parser:
                     self.__nextToken()
                     tok, peek_tok = self.__updateTokens()
                 if tok[0][1:] in firstSet["t"] or tok[0] in firstSet["t"]:
-                    self.__t()
+                    t_type = self.__t()
                     # print("IN EPRIME")
-                    tok, peek_tok = self.__updateTokens()
+                    # tok, peek_tok = self.__updateTokens()
+                    if (left_type, t_type, "+") not in type_equilvalence.keys():
+                        self.__incompatibility()
+                        return None
+                    else:
+                        return type_equilvalence[(left_type, t_type, "+")]
                 if len(tok) == 1:
                     if tok[0] in firstSet["ePrime"]:
-                        self.__ePrime()
+                        e_prime_type = self.__ePrime()
                         tok, peek_tok = self.__updateTokens()
                 if len(tok) == 2:
                     if tok[1] in firstSet["ePrime"]:
-                        self.__ePrime()
+                        e_prime_type = self.__ePrime()
                         tok, peek_tok = self.__updateTokens()
                 else:
-                    return
+                    if (left_type, t_type, "+") not in type_equilvalence.keys():
+                        self.__incompatibility()
+                        return t_type
+                    else:
+                        return type_equilvalence[(left_type, t_type, "+")]
+
+            else:
+                if (left_type, t_type, "+") not in type_equilvalence.keys():
+                    self.__incompatibility()
+                    return t_type
+                else:
+                    return type_equilvalence[(left_type, t_type, "+")]
 
         elif len(tok) == 2:
             if tok[0] in firstSet["ePrime"]:
@@ -689,20 +750,32 @@ class Parser:
                     self.__nextToken()
                     tok, peek_tok = self.__updateTokens()
                 if tok[0] in firstSet["t"]:
-                    self.__t()
+                    t_type = self.__t()
                     # print("IN EPRIME")
                     tok, peek_tok = self.__updateTokens()
                 if tok[1] in firstSet["ePrime"]:
-                    self.__ePrime()
+                    e_prime_type = self.__ePrime()
                 else:
-                    return
+                    if (left_type, t_type, "+") not in type_equilvalence.keys():
+                        self.__incompatibility()
+                        return t_type
+                    else:
+                        return type_equilvalence[(left_type, t_type, "+")]
+
+            else:
+                return left_type
+                # if (left_type, t_type, "+") not in type_equilvalence.keys():
+                #     self.__incompatibility()
+                #     return t_type
+                # else:
+                #     return type_equilvalence[(left_type, t_type, "+")]
 
         elif tok[0][1:] in followSet["ePrime"]:
-            return
+            return t_type
 
         else:
             tok, peek_tok = self.__recordingErrors(tok, peek_tok)
-            return
+            return t_type
 
     def __t(self) -> None:
         """The production rules for the 'T' non-terminal.
@@ -719,35 +792,38 @@ class Parser:
 
         if tok[0] in firstSet["t"] or tok[1] in firstSet["t"]:
             if tok[0] in firstSet["f"] or tok[1] in firstSet["f"]:
-                self.__f()
-                tok, peek_tok = self.__updateTokens()
+                f_type = self.__f()
+                # print("f_type: ", f_type)
+                # tok, peek_tok = self.__updateTokens()
                 # print("IN T")
 
             if len(tok) == 2:
                 if tok[1] in firstSet["tPrime"]:
-                    self.__tPrime()
+                    t_prime_type = self.__tPrime(f_type)
                     # print("IN T")
                     tok, peek_tok = self.__updateTokens()
             
             if "epsilon" in firstSet["tPrime"] and tok[0] not in firstSet["tPrime"]:
-                self.__tPrime()
+                t_prime_type = self.__tPrime(f_type)
+                return t_prime_type
                 # print("IN T")
 
         elif tok[0] in followSet["t"]:
-            return
+            return t_prime_type
 
         elif tok[1] in followSet["t"]:
-            return
+            return t_prime_type
 
         else:
             tok, peek_tok = self.__recordingErrors(tok, peek_tok)
-            return
+            return t_prime_type
 
-    def __tPrime(self) -> None:
+    def __tPrime(self, f_type) -> None:
         """The production rules for the "T'" non-terminal.
 
         Args:
         - self: mandatory object reference.
+        - f_type: the type of the 'f' non-terminal.
 
         Returns:
         None.
@@ -762,12 +838,16 @@ class Parser:
                     self.parser_trace.append("matched <" + tok[1])
                     self.__nextToken()
                 if tok[0] in firstSet["f"] or tok[1] in firstSet["f"]:
-                    self.__f()
+                    f_type = self.__f()
                     # print("IN TPRIME")
                     tok, peek_tok = self.__updateTokens()
                 if tok[1] in firstSet["tPrime"]:
-                    self.__tPrime()
+                    f_type = self.__tPrime(f_type)
                     # print("IN TPRIME")
+                return f_type
+
+            else:
+                return f_type
 
         elif len(tok) == 1:
             if tok[0][1:] in firstSet["tPrime"]:
@@ -776,25 +856,29 @@ class Parser:
                     self.__nextToken()
                     tok, peek_tok = self.__updateTokens()
                 if tok[0] in firstSet["f"]:
-                    self.__f()
+                    f_type = self.__f()
                     # print("IN TPRIME")
                     tok, peek_tok = self.__updateTokens()
                 if len(tok) == 2 and tok[1] in firstSet["tPrime"]:
-                    self.__f()
+                    f_type = self.__f()
                     # print("IN TPRIME")
                     tok, peek_tok = self.__updateTokens()
                 if tok[0][1:] in firstSet["tPrime"]:
-                    self.__tPrime()
+                    f_type = self.__tPrime(f_type)
                     # print("IN TPRIME")
+                    return f_type
                 else:
-                    return
+                    return f_type
+            
+            else:
+                return f_type
 
         elif tok[0][1:] in followSet["tPrime"]:
-            return
+            return f_type
         
         else:
             tok, peek_tok = self.__recordingErrors(tok, peek_tok)
-            return
+            return f_type
 
     def __f(self) -> None:
         """The production rules for the 'F' non-terminal.
@@ -808,6 +892,7 @@ class Parser:
 
         # print("IN F")
         tok, peek_tok = self.__updateTokens()
+        return_type = None
 
         if tok[0] in firstSet["f"] or tok[1] in firstSet["f"]:
             if tok[1] == "(>":
@@ -823,18 +908,21 @@ class Parser:
                     tok, peek_tok = self.__updateTokens()
             if tok[0] == "<id":
                 self.parser_trace.append("matched " + tok[0] + ", " + tok[1])
+                identifier_name = re.search("(.+?),", self.symbol_table[int(tok[1][:-1])]).group(1)
+                return_type = self.parsing_symb_table.check_return_type(identifier_name, self.scope)
                 self.__nextToken()
                 tok, peek_tok = self.__updateTokens()
+                return return_type
                 
         elif tok[0] in followSet["f"]:
-            return
+            return return_type
 
         elif tok[1] in followSet["f"]:
-            return
+            return return_type
 
         else:
             tok, peek_tok = self.__recordingErrors(tok, peek_tok)
-            return
+            return return_type
 
     def __forStmt(self) -> None:
         """The production rules for the 'ForStmt' non-terminal.
@@ -1090,19 +1178,21 @@ class Parser:
 
         # print("IN RETURNSTMT")
         tok, peek_tok = self.__updateTokens()
+        
         if tok[1] in firstSet["returnStmt"]:
             if tok[1] == "return>":
                 self.parser_trace.append("matched <" + tok[1])
                 self.__nextToken()
                 tok, peek_tok = self.__updateTokens()
             if tok[0] in firstSet["expr"] or tok[1] in firstSet["expr"]:
-                self.__expr()
+                expr_type = self.__expr()
                 # print("IN RETURNSTMT")
                 tok, peek_tok = self.__updateTokens()
             if tok[1] == ";>":
                 self.parser_trace.append("matched <" + tok[1])
                 self.__nextToken()
                 tok, peek_tok = self.__updateTokens()
+                return expr_type
 
         elif tok[0] in followSet["returnStmt"]:
             return
@@ -1125,6 +1215,6 @@ class Parser:
         """
 
         self.__program()
-        self.parsing_symb_table.print_table()
-        return self.parser_trace, self.error_stream, self.semantic_errors
+        # self.parsing_symb_table.print_table()
+        return self.parser_trace, self.error_stream, self.semantic_errors, self.parsing_symb_table
             

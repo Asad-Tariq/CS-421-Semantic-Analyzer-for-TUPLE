@@ -1,1 +1,4 @@
-<line#>    <error_found>                                      <error_type>        
+<line#>  <error_found>                                      <error_type>                                                                    
+5        'abb (Invalid char constant!)                      Lexical                                                                         
+5        'abb cannot be parsed                              Parsing                                                                         
+6        ERROR: Type mismatch in assignment                 Semantic                                                                        

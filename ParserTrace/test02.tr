@@ -2,7 +2,7 @@ Scope: 0
 matched <dt, int>
 matched <id, 1>
 matched <(>
-matched <dt, float>
+matched <dt, int>
 matched <id, 2>
 matched <,>
 matched <dt, int>
@@ -11,23 +11,36 @@ matched <)>
 matched <{>
 In abc()
 Scope: 1
+matched <dt, float>
+matched <id, 4>
+matched <;>
+matched <dt, float>
+matched <id, 5>
+matched <;>
+matched <dt, char>
+matched <id, 6>
+matched <;>
+matched <id, 6>
+matched <=>
+Parsing Error!
 matched <id, 4>
 matched <=>
 matched <id, 3>
 matched <+>
 matched <id, 2>
+ERROR: Type mismatch in assignment
 matched <;>
 matched <for>
 matched <(>
 matched <dt, int>
-matched <id, 5>
+matched <id, 7>
 matched <id, 4>
 matched <;>
 matched <id, 4>
 matched <rel_op, GT>
 matched <id, 2>
 matched <;>
-matched <id, 5>
+matched <id, 7>
 matched <++>
 matched <)>
 matched <{>

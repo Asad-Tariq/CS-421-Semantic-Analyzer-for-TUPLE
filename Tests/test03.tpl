@@ -1,4 +1,4 @@
-int abc (float b, int c;') {
-    x = 4 + d;
-    return b + c;;
+int abc (int b, int c) {
+    int a;
+    a = b * c;
 }

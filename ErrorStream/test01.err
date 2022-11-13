@@ -1,1 +1,5 @@
-<line#>    <error_found>                                      <error_type>        
+<line#>  <error_found>                                      <error_type>                                                                    
+3        'a (Invalid char constant!)                        Lexical                                                                         
+1        ' cannot be parsed                                 Parsing                                                                         
+2        Undeclared identifier a                            Semantic                                                                        
+2        Type Incompatibility                               Semantic                                                                        

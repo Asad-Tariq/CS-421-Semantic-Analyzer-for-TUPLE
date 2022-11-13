@@ -7,26 +7,17 @@ matched <id, 2>
 matched <,>
 matched <dt, int>
 matched <id, 3>
-matched <)>
+Parsing Error!
 matched <{>
 In abc()
 Scope: 1
 matched <id, 4>
+Undeclared Error!
 matched <=>
 matched <id, 3>
 matched <+>
 matched <id, 2>
-matched <;>
-matched <id, 2>
-matched <=>
-matched <id, 3>
-matched <+>
-matched <id, 4>
-matched <;>
-matched <return>
-matched <id, 4>
-matched <*>
-matched <id, 2>
+Type Incompatibility Error!
 matched <;>
 matched <}>
 Exiting abc()
