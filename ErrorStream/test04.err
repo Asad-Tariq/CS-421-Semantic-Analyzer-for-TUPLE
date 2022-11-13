@@ -1,1 +1,2 @@
 <line#>    <error_found>                                      <error_type>        
+2          Undeclared identifier a                            Semantic            

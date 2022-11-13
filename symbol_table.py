@@ -1,10 +1,11 @@
 from compatibility_spec import *
 
 class Record:
-    def __init__(self, name, return_type, scope):
+    def __init__(self, name, return_type, scope, size):
         self.name = name
         self.return_type = return_type
         self.scope = scope
+        self.size = size
 
 class SymbolTable:
     def __init__(self):
@@ -20,8 +21,8 @@ class SymbolTable:
         else:
             return False
 
-    def enter(self, name, return_type, scope):
-        self.table.append(Record(name, return_type, scope))
+    def enter(self, name, return_type, scope, size):
+        self.table.append(Record(name, return_type, scope, size))
 
     def check_return_type(self, name, scope):
         if len(self.table) > 0:
@@ -35,3 +36,4 @@ class SymbolTable:
             print("record name: ", record.name)
             print("record return type: ", record.return_type)
             print("record scope: ", record.scope)
+            print("record size: ", record.size)

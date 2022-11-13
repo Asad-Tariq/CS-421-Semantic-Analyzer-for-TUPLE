@@ -162,8 +162,13 @@ class Parser:
         None.
         """
 
+        if id_type == "Function":
+            size = 2
+        else:
+            size = 1
+
         if self.__lookup(name, return_type) == False:
-            self.parsing_symb_table.enter(name, return_type, self.scope)
+            self.parsing_symb_table.enter(name, return_type, self.scope, size)
         else:
             self.parser_trace.append("Re-declaration Error!")
             error = id_type + " " + name + " already defined in scope " + str(self.scope)
@@ -172,6 +177,26 @@ class Parser:
             except KeyError:
                 self.semantic_errors[self.line_count] = [error]
     
+    def __undeclared(self, name, return_type) -> None:
+        """Checks if a variable/function is declared.
+
+        Args:
+        - self: mandatory object reference.
+        - name: the name of the variable/function.
+        - return_type: the return type of the variable/function.
+
+        Returns:
+        True if the variable/function is declared, False otherwise.
+        """
+
+        if self.__lookup(name, return_type) == False:
+            self.parser_trace.append("Undeclared Error!")
+            error = "Undeclared identifier " + name
+            try:
+                self.semantic_errors[self.line_count].append(error)
+            except KeyError:
+                self.semantic_errors[self.line_count] = [error]
+
     def __program(self) -> None:
         """The production rules for the 'Program' non-terminal.
 
@@ -551,6 +576,7 @@ class Parser:
                 self.parser_trace.append("matched " + tok[0] + ", " + tok[1])
                 identifier_name = re.search("(.+?),", self.symbol_table[int(tok[1][:-1])]).group(1)
                 identifier_type = self.parsing_symb_table.check_return_type(identifier_name, self.scope)
+                self.__undeclared(identifier_name, identifier_type)
                 self.__nextToken()
                 tok, peek_tok = self.__updateTokens()
             if len(tok) == 2 and tok[1] == "=>":
